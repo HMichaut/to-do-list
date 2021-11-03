@@ -50,3 +50,54 @@ table {
 /* 
 End reset
 */
+
+#content {
+  background-color: beige;
+  background-repeat: no-repeat;
+  background-size:cover;
+  height: 100vh;
+}
+
+.navbar {
+  height: 50px;
+  width: 100%;
+  border-bottom: 1px solid rgba(110,110,110,0.5);
+  display: flex;
+  justify-content: center;
+	align-content: center;
+}
+
+.navbar h1 {
+  font-family: Arial, Helvetica, sans-serif;
+  color: black;
+  font-size: 30px;
+}
+
+.footer {
+  height: 50px;
+  width: 100%;
+  position:absolute;
+  bottom:0;
+  background-color: grey;
+  color: white;
+  text-align: center;
+}
+
+.footer p {
+  margin-top: 17px;
+}
+
+#content-text {
+  margin-top: 20px;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  text-align: center;
+}
+
+#content-text h1 {
+  font-family: Arial, Helvetica, sans-serif;
+  color: black;
+  font-size: 30px;
+}
