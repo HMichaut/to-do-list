@@ -91,13 +91,26 @@ End reset
   margin-top: 20px;
   height: auto;
   display: flex;
+	flex-wrap: wrap;
   flex-direction: column;
   align-content: center;
   text-align: center;
 }
 
-#content-text h1 {
-  font-family: Arial, Helvetica, sans-serif;
-  color: black;
-  font-size: 30px;
+.to-do-list-box {
+	background-color: lightblue;
+	margin-top: 10px;
+	height: 50px;
+	width: 1000px;
+	border-style: ridge;
+	border-width: 1px;
+	border-color: black;
+	display: flex;
+  flex-direction: row;
+	justify-content: space-between;
+}
+
+.param-box {
+	margin-left: 20px;
+	margin-right: 20px;
 }
