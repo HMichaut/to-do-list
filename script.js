@@ -48,6 +48,36 @@ function displayProjectList() {
     });
     contentDiv.appendChild(project);
   }
+  const form = document.createElement("form");
+  form.className = "project-form";
+
+  const frm_text= document.createElement("input");
+  frm_text.setAttribute("type", "text");
+  frm_text.setAttribute("name", "project");
+  frm_text.setAttribute("placeholder", "new project");
+  frm_text.className = "text-field";
+
+  let s = document.createElement("button");
+
+  s.setAttribute("type", "button");
+  s.innerHTML = "Add";
+
+  s.addEventListener("click", () => {
+    toDoList.createProject(frm_text.value);
+    resetProjectList();
+    displayProjectList();
+  });
+
+  form.appendChild(frm_text);
+  form.appendChild(s);
+  contentDiv.appendChild(form);
+}
+
+function resetProjectList() {
+  const new_list = document.body.appendChild(document.createElement('aside'));
+  new_list.id = "project-view";
+  const old_list = document.getElementById("project-view");
+  old_list.parentNode.replaceChild(new_list, old_list);
 }
 
 function resetToDoListView() {
@@ -60,6 +90,12 @@ function resetToDoListView() {
 function displayProject(inputProject) {
   const inputToDolist = inputProject.getAttributedToDoList();
   const contentDiv = document.getElementById("content-text");
+
+  const projectBox = document.createElement("div");
+  projectBox.innerHTML = inputProject.getName();
+  projectBox.className = "content-project-box";
+  contentDiv.appendChild(projectBox);
+  
   for (let i = 0; i < inputToDolist.length; i++) {
     const toDoListBox = document.createElement("div");
 
