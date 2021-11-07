@@ -118,7 +118,7 @@ function displayProject(inputProject) {
     const completion = document.createElement("button");
     
     if (inputToDolist[i].getCompletion()) {
-      toDoListBox.className = "to-do-list-box";
+      toDoListBox.className = "to-do-list-box closed";
       completion.className = "completion-box";
       completion.innerHTML = "Open";
       completion.addEventListener("click", () => {
@@ -127,7 +127,13 @@ function displayProject(inputProject) {
         displayProject(inputProject);
       });
     } else {
-      toDoListBox.className = "to-do-list-box-open";
+      if (inputToDolist[i].getPriority() === "1") {
+        toDoListBox.className = "to-do-list-box open-1";
+      } else if (inputToDolist[i].getPriority() === "2") {
+        toDoListBox.className = "to-do-list-box open-2";
+      } else {
+        toDoListBox.className = "to-do-list-box open-3";
+      }
       completion.className = "completion-box-open";
       completion.innerHTML = "Close";
       completion.addEventListener("click", () => {
@@ -177,10 +183,6 @@ function displayProject(inputProject) {
     frm_priority.appendChild(option);
   }
 
-
-
-
-
   const create = document.createElement("button");
   
   create.className = "create-box";
@@ -200,16 +202,16 @@ function displayProject(inputProject) {
   contentDiv.appendChild(form);
 };
 
-testToDo1 = toDo("test title 1", "test description 1", "test date 1", "urgent1", true);
-testToDo2 = toDo("test title 2", "test description 2", "test date 2", "urgent2", false);
-testToDo3 = toDo("test title 3", "test description 3", "test date 3", "urgent3", true);
+testToDo1 = toDo("test title 1", "test description 1", "test date 1", "1", true);
+testToDo2 = toDo("test title 2", "test description 2", "test date 2", "2", false);
+testToDo3 = toDo("test title 3", "test description 3", "test date 3", "3", true);
 testProject = project("test name 1", [testToDo1, testToDo2, testToDo3]);
-testToDo4 = toDo("test title 4", "test description 4", "test date 4", "urgent4");
+testToDo4 = toDo("test title 4", "test description 4", "test date 4", "1", false);
 testProject.addToDoToProject(testToDo4);
 
-testToDo5 = toDo("test title 5", "test description 5", "test date 5", "urgent5", false);
-testToDo6 = toDo("test title 6", "test description 6", "test date 6", "urgent6", true);
-testToDo7 = toDo("test title 7", "test description 7", "test date 7", "urgent7", false);
+testToDo5 = toDo("test title 5", "test description 5", "test date 5", "1", false);
+testToDo6 = toDo("test title 6", "test description 6", "test date 6", "3", true);
+testToDo7 = toDo("test title 7", "test description 7", "test date 7", "2", false);
 testProject2 = project("test name 2", [testToDo5, testToDo6, testToDo7]);
 
 toDoList.addProjectToList(testProject);

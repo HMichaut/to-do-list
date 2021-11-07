@@ -100,7 +100,6 @@ End reset
 }
 
 .to-do-list-box {
-	background-color: lightgreen;
 	margin-top: 10px;
 	height: 50px;
 	width: 70vw;
@@ -112,6 +111,22 @@ End reset
   flex-direction: row;
 	align-items: center;
 	justify-content: space-between;
+}
+
+.closed {
+	background-color: lightgrey;
+}
+
+.open-1 {
+	background-color: pink;
+}
+
+.open-2 {
+	background-color: lightgreen;
+}
+
+.open-3 {
+	background-color: lightblue;
 }
 
 .to-do-list-box-open {
@@ -179,24 +194,24 @@ End reset
 
 .completion-box {
 	margin-right: 1vw;
-	background-color: green;
-	color: white;
-	cursor:pointer;
-}
-
-.completion-box:hover {
-	background-color: darkgreen;
-}
-
-.completion-box-open {
-	margin-right: 1vw;
 	background-color: red;
 	color: white;
 	cursor:pointer;
 }
 
-.completion-box-open:hover {
+.completion-box:hover {
 	background-color: darkred;
+}
+
+.completion-box-open {
+	margin-right: 1vw;
+	background-color: green;
+	color: white;
+	cursor:pointer;
+}
+
+.completion-box-open:hover {
+	background-color: darkgreen;
 }
 
 .create-box {
