@@ -34,9 +34,13 @@ const toDoList = (() => {
 function displayProjectList() {
   const projectList = toDoList.getProjectList();
   const contentDiv = document.getElementById("project-view");
+  const projectHead = document.createElement("div");
+  projectHead.innerHTML = "Project:"
+  projectHead.className = "project-head";
+  contentDiv.appendChild(projectHead);
   for (let i = 0; i < projectList.length; i++) {
     const project = document.createElement("div");
-    project.innerHTML = projectList[i].getName();
+    project.innerHTML = "> " + projectList[i].getName();
     project.className = "project-box";
     project.addEventListener("click", () => {
       resetToDoListView();
