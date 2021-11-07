@@ -144,6 +144,51 @@ function displayProject(inputProject) {
     toDoListBox.appendChild(completion);
     contentDiv.appendChild(toDoListBox);
   }
+
+  const form = document.createElement("form");
+  form.className = "to-do-list-form";
+
+  const frm_title = document.createElement("input");
+  frm_title.setAttribute("type", "text");
+  frm_title.setAttribute("name", "title");
+  frm_title.setAttribute("placeholder", "title");
+  frm_title.className = "to-do-text-field";
+
+  const frm_description = document.createElement("input");
+  frm_description.setAttribute("type", "text");
+  frm_description.setAttribute("name", "title");
+  frm_description.setAttribute("placeholder", "description");
+  frm_description.className = "to-do-text-field";
+
+  const frm_due_date = document.createElement("input");
+  frm_due_date.setAttribute("type", "text");
+  frm_due_date.setAttribute("name", "title");
+  frm_due_date.setAttribute("placeholder", "due date");
+  frm_due_date.className = "to-do-text-field";
+
+  const frm_priority = document.createElement("input");
+  frm_priority.setAttribute("type", "text");
+  frm_priority.setAttribute("name", "title");
+  frm_priority.setAttribute("placeholder", "priority");
+  frm_priority.className = "to-do-text-field";
+
+  const create = document.createElement("button");
+  
+  create.className = "create-box";
+  create.innerHTML = "Create";
+  create.addEventListener("click", () => {
+    inputProject.addToDoToProject(toDo(frm_title.value, frm_description.value, frm_due_date.value, frm_priority.value, false));
+    resetToDoListView();
+    displayProject(inputProject);
+  });
+
+
+  form.appendChild(frm_title);
+  form.appendChild(frm_description);
+  form.appendChild(frm_due_date);
+  form.appendChild(frm_priority);
+  form.appendChild(create);
+  contentDiv.appendChild(form);
 };
 
 testToDo1 = toDo("test title 1", "test description 1", "test date 1", "urgent1", true);
