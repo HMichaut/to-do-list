@@ -14,7 +14,8 @@ const project = (name, attributedToDoList) => {
   const getName = () => name;
   const getAttributedToDoList = () => attributedToDoList;
   const addToDoToProject = (toDo) => attributedToDoList.push(toDo);
-  return { getName, getAttributedToDoList, addToDoToProject };
+  const deleteToDo = (index) => attributedToDoList.splice(index, 1);
+  return { getName, getAttributedToDoList, addToDoToProject, deleteToDo };
 };
 
 const toDoList = (() => {
@@ -23,11 +24,13 @@ const toDoList = (() => {
   const createProject = (inputName) => projectList.push(project(inputName, []));
   const addProjectToList = (inputProject) => projectList.push(inputProject);
   const displayProjectList = () => projectList.map(el => el.getName());
+  const deleteProject = (index) => projectList.splice(index, 1);
   return {
     getProjectList,
     createProject,
     addProjectToList,
-    displayProjectList
+    displayProjectList,
+    deleteProject
   };
 })();
 
@@ -44,7 +47,7 @@ function displayProjectList() {
     project.className = "project-box";
     project.addEventListener("click", () => {
       resetToDoListView();
-      displayProject(projectList[i]);
+      displayProject(projectList[i], i);
     });
     contentDiv.appendChild(project);
   }
@@ -87,14 +90,39 @@ function resetToDoListView() {
   old_form.parentNode.replaceChild(new_form, old_form);
 }
 
-function displayProject(inputProject) {
-  const inputToDolist = inputProject.getAttributedToDoList();
+function displayProject(inputProject, projectIndex) {
+
+  let procInputProject = inputProject;
+  let procProjectIndex = projectIndex;
+
+  if (procInputProject === undefined) {
+    toDoList.createProject("default");
+    procInputProject = toDoList.getProjectList()[0];
+    procProjectIndex = 0;
+  }
+
+  const inputToDolist = procInputProject.getAttributedToDoList();
   const contentDiv = document.getElementById("content-text");
 
   const projectBox = document.createElement("div");
-  projectBox.innerHTML = inputProject.getName();
+  projectBox.innerHTML = procInputProject.getName();
   projectBox.className = "content-project-box";
   contentDiv.appendChild(projectBox);
+
+
+  const deleteProject = document.createElement("button");
+  deleteProject.className = "delete-project-box";
+  deleteProject.innerHTML = "Delete";
+  deleteProject.addEventListener("click", () => {
+    toDoList.deleteProject(projectIndex);
+    resetToDoListView();
+    displayProject(toDoList.getProjectList()[0], 0);
+    resetProjectList();
+    displayProjectList();
+  });
+
+  contentDiv.appendChild(deleteProject);
+
   
   for (let i = 0; i < inputToDolist.length; i++) {
     const toDoListBox = document.createElement("div");
@@ -124,7 +152,7 @@ function displayProject(inputProject) {
       completion.addEventListener("click", () => {
         inputToDolist[i].closeToDo();
         resetToDoListView();
-        displayProject(inputProject);
+        displayProject(procInputProject, procProjectIndex);
       });
     } else {
       if (inputToDolist[i].getPriority() === "1") {
@@ -139,15 +167,25 @@ function displayProject(inputProject) {
       completion.addEventListener("click", () => {
         inputToDolist[i].openToDo();
         resetToDoListView();
-        displayProject(inputProject);
+        displayProject(procInputProject, procProjectIndex);
       });
     };
+
+    const deleteToDo = document.createElement("button");
+    deleteToDo.className = "completion-box";
+    deleteToDo.innerHTML = "Delete";
+    deleteToDo.addEventListener("click", () => {
+      procInputProject.deleteToDo(i);
+      resetToDoListView();
+      displayProject(procInputProject, procProjectIndex);
+    });
 
     toDoListBox.appendChild(titleBox);
     toDoListBox.appendChild(descriptionBox);
     toDoListBox.appendChild(dueDate);
     toDoListBox.appendChild(priority);
     toDoListBox.appendChild(completion);
+    toDoListBox.appendChild(deleteToDo);
     contentDiv.appendChild(toDoListBox);
   }
 
@@ -175,7 +213,6 @@ function displayProject(inputProject) {
   frm_priority.setAttribute("name", "priority");
   frm_priority.className = "to-do-text-field";
 
-
   for (let j = 0; j < 3; j++) {
     let option = document.createElement("option");
     option.setAttribute("value", j+1);
@@ -188,9 +225,9 @@ function displayProject(inputProject) {
   create.className = "create-box";
   create.innerHTML = "Create";
   create.addEventListener("click", () => {
-    inputProject.addToDoToProject(toDo(frm_title.value, frm_description.value, frm_due_date.value, frm_priority.value, false));
+    procInputProject.addToDoToProject(toDo(frm_title.value, frm_description.value, frm_due_date.value, frm_priority.value, false));
     resetToDoListView();
-    displayProject(inputProject);
+    displayProject(procInputProject, procProjectIndex);
   });
 
 
@@ -218,5 +255,5 @@ toDoList.addProjectToList(testProject);
 toDoList.addProjectToList(testProject2);
 console.log(toDoList.displayProjectList());
 
-displayProject(toDoList.getProjectList()[0]);
+displayProject(toDoList.getProjectList()[0], 0);
 displayProjectList()
