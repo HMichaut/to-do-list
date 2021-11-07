@@ -5,8 +5,8 @@ const toDo = (title, description, dueDate, priority, completion) => {
   const getPriority = () => priority;
   const setPriority = (inputPriority) => priority = inputPriority;
   const getCompletion = () => completion;
-  const closeToDo = () => completion = true;
-  const openToDo = () => completion = false;
+  const closeToDo = () => completion = false;
+  const openToDo = () => completion = true;
   return { getTitle, getDescription, getDueDate, getPriority, getCompletion, setPriority, closeToDo, openToDo };
 };
 
@@ -58,7 +58,6 @@ function displayProject(inputProject) {
   const contentDiv = document.getElementById("content-text");
   for (let i = 0; i < inputToDolist.length; i++) {
     const toDoListBox = document.createElement("div");
-    toDoListBox.className = "to-do-list-box";
 
     const titleBox = document.createElement("div");
     titleBox.innerHTML = inputToDolist[i].getTitle();
@@ -76,24 +75,47 @@ function displayProject(inputProject) {
     priority.innerHTML = inputToDolist[i].getPriority();
     priority.className = "param-box";
 
+    const completion = document.createElement("button");
+    
+    if (inputToDolist[i].getCompletion()) {
+      toDoListBox.className = "to-do-list-box";
+      completion.className = "completion-box";
+      completion.innerHTML = "Open";
+      completion.addEventListener("click", () => {
+        inputToDolist[i].closeToDo();
+        resetToDoListView();
+        displayProject(inputProject);
+      });
+    } else {
+      toDoListBox.className = "to-do-list-box-open";
+      completion.className = "completion-box-open";
+      completion.innerHTML = "Close";
+      completion.addEventListener("click", () => {
+        inputToDolist[i].openToDo();
+        resetToDoListView();
+        displayProject(inputProject);
+      });
+    };
+
     toDoListBox.appendChild(titleBox);
     toDoListBox.appendChild(descriptionBox);
     toDoListBox.appendChild(dueDate);
     toDoListBox.appendChild(priority);
+    toDoListBox.appendChild(completion);
     contentDiv.appendChild(toDoListBox);
   }
 };
 
-testToDo1 = toDo("test title 1", "test description 1", "test date 1", "urgent1");
-testToDo2 = toDo("test title 2", "test description 2", "test date 2", "urgent2");
-testToDo3 = toDo("test title 3", "test description 3", "test date 3", "urgent3");
+testToDo1 = toDo("test title 1", "test description 1", "test date 1", "urgent1", true);
+testToDo2 = toDo("test title 2", "test description 2", "test date 2", "urgent2", false);
+testToDo3 = toDo("test title 3", "test description 3", "test date 3", "urgent3", true);
 testProject = project("test name 1", [testToDo1, testToDo2, testToDo3]);
 testToDo4 = toDo("test title 4", "test description 4", "test date 4", "urgent4");
 testProject.addToDoToProject(testToDo4);
 
-testToDo5 = toDo("test title 5", "test description 5", "test date 5", "urgent5");
-testToDo6 = toDo("test title 6", "test description 6", "test date 6", "urgent6");
-testToDo7 = toDo("test title 7", "test description 7", "test date 7", "urgent7");
+testToDo5 = toDo("test title 5", "test description 5", "test date 5", "urgent5", false);
+testToDo6 = toDo("test title 6", "test description 6", "test date 6", "urgent6", true);
+testToDo7 = toDo("test title 7", "test description 7", "test date 7", "urgent7", false);
 testProject2 = project("test name 2", [testToDo5, testToDo6, testToDo7]);
 
 toDoList.addProjectToList(testProject);
