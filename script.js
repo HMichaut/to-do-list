@@ -23,15 +23,6 @@ const toDoList = (() => {
   const createProject = (inputName) => projectList.push(project(inputName, []));
   const addProjectToList = (inputProject) => projectList.push(inputProject);
   const displayProjectList = () => projectList.map(el => el.getName());
-  // {
-  //   projectList.map(el => el.getName());
-  //   // for (let i = 0; i < projectList.length; i++) {
-  //   //   console.log(projectList[i].getName());
-  //   // inputList = projectList[i].getAttributedToDoList();
-  //   // for (let j = 0; j < inputList.length; j++) {
-  //   //   console.log(inputList[j].getTitle());
-  //   // }
-  // };
   return {
     getProjectList,
     createProject,
@@ -39,6 +30,28 @@ const toDoList = (() => {
     displayProjectList
   };
 })();
+
+function displayProjectList() {
+  const projectList = toDoList.getProjectList();
+  const contentDiv = document.getElementById("project-view");
+  for (let i = 0; i < projectList.length; i++) {
+    const project = document.createElement("div");
+    project.innerHTML = projectList[i].getName();
+    project.className = "project-box";
+    project.addEventListener("click", () => {
+      resetToDoListView();
+      displayProject(projectList[i]);
+    });
+    contentDiv.appendChild(project);
+  }
+}
+
+function resetToDoListView() {
+  const new_form = document.body.appendChild(document.createElement('content'));
+  new_form.id = "content-text";
+  const old_form = document.getElementById("content-text");
+  old_form.parentNode.replaceChild(new_form, old_form);
+}
 
 function displayProject(inputProject) {
   const inputToDolist = inputProject.getAttributedToDoList();
@@ -87,4 +100,5 @@ toDoList.addProjectToList(testProject);
 toDoList.addProjectToList(testProject2);
 console.log(toDoList.displayProjectList());
 
-displayProject(testProject2);
+displayProject(toDoList.getProjectList()[0]);
+displayProjectList()
