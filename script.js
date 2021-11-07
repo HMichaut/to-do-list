@@ -156,21 +156,30 @@ function displayProject(inputProject) {
 
   const frm_description = document.createElement("input");
   frm_description.setAttribute("type", "text");
-  frm_description.setAttribute("name", "title");
+  frm_description.setAttribute("name", "description");
   frm_description.setAttribute("placeholder", "description");
   frm_description.className = "to-do-text-field";
 
   const frm_due_date = document.createElement("input");
-  frm_due_date.setAttribute("type", "text");
-  frm_due_date.setAttribute("name", "title");
-  frm_due_date.setAttribute("placeholder", "due date");
+  frm_due_date.setAttribute("type", "date");
+  frm_due_date.setAttribute("name", "due date");
   frm_due_date.className = "to-do-text-field";
 
-  const frm_priority = document.createElement("input");
-  frm_priority.setAttribute("type", "text");
-  frm_priority.setAttribute("name", "title");
-  frm_priority.setAttribute("placeholder", "priority");
+  const frm_priority = document.createElement("select");
+  frm_priority.setAttribute("name", "priority");
   frm_priority.className = "to-do-text-field";
+
+
+  for (let j = 0; j < 3; j++) {
+    let option = document.createElement("option");
+    option.setAttribute("value", j+1);
+    option.innerHTML = j + 1;
+    frm_priority.appendChild(option);
+  }
+
+
+
+
 
   const create = document.createElement("button");
   
