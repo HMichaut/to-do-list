@@ -54,7 +54,7 @@ function displayProjectList() {
   const form = document.createElement("form");
   form.className = "project-form";
 
-  const frm_text= document.createElement("input");
+  const frm_text = document.createElement("input");
   frm_text.setAttribute("type", "text");
   frm_text.setAttribute("name", "project");
   frm_text.setAttribute("placeholder", "new project");
@@ -90,6 +90,26 @@ function resetToDoListView() {
   old_form.parentNode.replaceChild(new_form, old_form);
 }
 
+function initModal() {
+  const btn = document.getElementById("myBtn");
+  const span = document.getElementsByClassName("close")[0];
+  const modal = document.getElementById("myModal");
+  span.onclick = function () {
+    modal.style.display = "none";
+  }
+  window.onclick = function (event) {
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
+  }
+}
+
+function openModalToDo() {
+  const modal = document.getElementById("myModal");
+  modal.style.display = "block";
+}
+
+
 function displayProject(inputProject, projectIndex) {
 
   let procInputProject = inputProject;
@@ -123,17 +143,20 @@ function displayProject(inputProject, projectIndex) {
 
   contentDiv.appendChild(deleteProject);
 
-  
+
   for (let i = 0; i < inputToDolist.length; i++) {
     const toDoListBox = document.createElement("div");
+    toDoListBox.addEventListener("click", () => {
+      openModalToDo();
+    });
 
     const titleBox = document.createElement("div");
     titleBox.innerHTML = inputToDolist[i].getTitle();
     titleBox.className = "param-box";
 
-    const descriptionBox = document.createElement("div");
-    descriptionBox.innerHTML = inputToDolist[i].getDescription();
-    descriptionBox.className = "param-box";
+    // const descriptionBox = document.createElement("div");
+    // descriptionBox.innerHTML = inputToDolist[i].getDescription();
+    // descriptionBox.className = "param-box";
 
     const dueDate = document.createElement("div");
     dueDate.innerHTML = inputToDolist[i].getDueDate();
@@ -144,7 +167,7 @@ function displayProject(inputProject, projectIndex) {
     priority.className = "param-box";
 
     const completion = document.createElement("button");
-    
+
     if (inputToDolist[i].getCompletion()) {
       toDoListBox.className = "to-do-list-box closed";
       completion.className = "completion-box";
@@ -181,7 +204,7 @@ function displayProject(inputProject, projectIndex) {
     });
 
     toDoListBox.appendChild(titleBox);
-    toDoListBox.appendChild(descriptionBox);
+    // toDoListBox.appendChild(descriptionBox);
     toDoListBox.appendChild(dueDate);
     toDoListBox.appendChild(priority);
     toDoListBox.appendChild(completion);
@@ -215,13 +238,13 @@ function displayProject(inputProject, projectIndex) {
 
   for (let j = 0; j < 3; j++) {
     let option = document.createElement("option");
-    option.setAttribute("value", j+1);
+    option.setAttribute("value", j + 1);
     option.innerHTML = j + 1;
     frm_priority.appendChild(option);
   }
 
   const create = document.createElement("button");
-  
+
   create.className = "create-box";
   create.innerHTML = "Create";
   create.addEventListener("click", () => {
@@ -256,4 +279,5 @@ toDoList.addProjectToList(testProject2);
 console.log(toDoList.displayProjectList());
 
 displayProject(toDoList.getProjectList()[0], 0);
-displayProjectList()
+displayProjectList();
+initModal();
