@@ -104,8 +104,10 @@ function initModal() {
   }
 }
 
-function openModalToDo() {
+function openModalToDo(input) {
   const modal = document.getElementById("myModal");
+  const modalText = document.getElementById("modal-description-text");
+  modalText.innerHTML = input.getDescription();
   modal.style.display = "block";
 }
 
@@ -147,7 +149,7 @@ function displayProject(inputProject, projectIndex) {
   for (let i = 0; i < inputToDolist.length; i++) {
     const toDoListBox = document.createElement("div");
     toDoListBox.addEventListener("click", () => {
-      openModalToDo();
+      openModalToDo(inputToDolist[i]);
     });
 
     const titleBox = document.createElement("div");
