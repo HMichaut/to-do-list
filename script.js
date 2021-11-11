@@ -4,10 +4,16 @@ const toDo = (title, description, dueDate, priority, completion) => {
   const getDueDate = () => dueDate;
   const getPriority = () => priority;
   const setPriority = (inputPriority) => priority = inputPriority;
+  const updateValues = (inputTitle, inputDescription, inputDueDate, inputPriority) => {
+    title = inputTitle;
+    description = inputDescription;
+    dueDate = inputDueDate;
+    priority = inputPriority;
+  }
   const getCompletion = () => completion;
   const closeToDo = () => completion = false;
   const openToDo = () => completion = true;
-  return { getTitle, getDescription, getDueDate, getPriority, getCompletion, setPriority, closeToDo, openToDo };
+  return { getTitle, getDescription, getDueDate, getPriority, getCompletion, setPriority, closeToDo, openToDo, updateValues };
 };
 
 const project = (name, attributedToDoList) => {
@@ -104,20 +110,109 @@ function initModal() {
   }
 }
 
-function openModalToDo(input, deleteButton) {
+function openModalToDo(input, deleteButton, procInputProject, procProjectIndex) {
   const modal = document.getElementById("myModal");
+  const form = document.createElement("form");
+  form.className = "to-do-list-edit";
 
-  const modalTitle = document.getElementById("modal-title");
-  modalTitle.innerHTML = "Title: " + input.getTitle();
+  const label_title = document.createElement("Label");
+  label_title.innerHTML = "Title";
 
-  const modalDate = document.getElementById("modal-date");
-  modalDate.innerHTML = "Due date: " + input.getDueDate();
+  const frm_title = document.createElement("input");
+  frm_title.setAttribute("type", "text");
+  frm_title.setAttribute("name", "title");
+  frm_title.setAttribute("placeholder", "title");
+  frm_title.className = "to-do-text-field";
+
+  frm_title.value = input.getTitle();
+
+  const label_description = document.createElement("Label");
+  label_description.innerHTML = "Description";
+
+  const frm_description = document.createElement("input");
+  frm_description.setAttribute("type", "text");
+  frm_description.setAttribute("name", "description");
+  frm_description.setAttribute("placeholder", "description");
+  frm_description.className = "to-do-text-field";
+
+  frm_description.value = input.getDescription();
+
+  const label_due_date = document.createElement("Label");
+  label_due_date.innerHTML = "Due Date";
+
+  const frm_due_date = document.createElement("input");
+  frm_due_date.setAttribute("type", "date");
+  frm_due_date.setAttribute("name", "due date");
+  frm_due_date.className = "to-do-text-field";
+
+  frm_due_date.valueAsDate = input.getDueDate();
+
+  const label_priority = document.createElement("Label");
+  label_priority.innerHTML = "Priority";
+
+  const frm_priority = document.createElement("select");
+  frm_priority.setAttribute("name", "priority");
+  frm_priority.className = "to-do-text-field";
+
+  for (let j = 0; j < 3; j++) {
+    let option = document.createElement("option");
+    option.setAttribute("value", j + 1);
+    option.innerHTML = j + 1;
+    frm_priority.appendChild(option);
+  }
+
+  frm_priority.value = input.getPriority();
+  const edit = document.createElement("button");
+
+  edit.className = "create-box";
+  edit.setAttribute("type", "button");
+  edit.innerHTML = "Edit";
+  edit.addEventListener("click", () => {
+    input.updateValues(frm_title.value, frm_description.value, frm_due_date.valueAsDate, frm_priority.value);
+    resetToDoListView();
+    displayProject(procInputProject, procProjectIndex);
+    modal.style.display = "none";
+  });
+
+  const new_form = document.body.appendChild(document.createElement('div'));
+  new_form.id = "edit-form";
+  const old_form = document.getElementById("edit-form");
+  old_form.parentNode.replaceChild(new_form, old_form);
 
   const oldDeleteButton = document.getElementById("delete-button");
   oldDeleteButton.parentNode.replaceChild(deleteButton, oldDeleteButton);
 
-  const modalText = document.getElementById("modal-description-text");
-  modalText.innerHTML = "Description: " + input.getDescription();
+  const editForm = document.getElementById("edit-form");
+
+  const br = document.createElement("br");
+
+  form.appendChild(label_title);
+  form.appendChild(br.cloneNode());
+  form.appendChild(frm_title);
+  form.appendChild(br.cloneNode());
+  form.appendChild(br.cloneNode());
+
+  form.appendChild(label_description);
+  form.appendChild(br.cloneNode());
+  form.appendChild(frm_description);
+  form.appendChild(br.cloneNode());
+  form.appendChild(br.cloneNode());
+
+  form.appendChild(label_due_date);
+  form.appendChild(br.cloneNode());
+  form.appendChild(frm_due_date);
+  form.appendChild(br.cloneNode());
+  form.appendChild(br.cloneNode());
+
+  form.appendChild(label_priority);
+  form.appendChild(br.cloneNode());
+  form.appendChild(frm_priority);
+  form.appendChild(br.cloneNode());
+  form.appendChild(br.cloneNode());
+
+  form.appendChild(edit);
+  editForm.appendChild(form);
+
   modal.style.display = "block";
 }
 
@@ -176,11 +271,12 @@ function displayProject(inputProject, projectIndex) {
 
 
     titleBox.addEventListener("click", () => {
-      openModalToDo(inputToDolist[i], deleteToDo);
+      openModalToDo(inputToDolist[i], deleteToDo, procInputProject, procProjectIndex);
     });
 
     const dueDate = document.createElement("div");
-    dueDate.innerHTML = inputToDolist[i].getDueDate();
+
+    dueDate.innerHTML = inputToDolist[i].getDueDate().toISOString().split('T')[0];
     dueDate.className = "param-box";
 
     const priority = document.createElement("div");
@@ -258,7 +354,7 @@ function displayProject(inputProject, projectIndex) {
   create.className = "create-box";
   create.innerHTML = "Create";
   create.addEventListener("click", () => {
-    procInputProject.addToDoToProject(toDo(frm_title.value, frm_description.value, frm_due_date.value, frm_priority.value, false));
+    procInputProject.addToDoToProject(toDo(frm_title.value, frm_description.value, frm_due_date.valueAsDate , frm_priority.value, false));
     resetToDoListView();
     displayProject(procInputProject, procProjectIndex);
   });
@@ -272,21 +368,22 @@ function displayProject(inputProject, projectIndex) {
   contentDiv.appendChild(form);
 };
 
-testToDo1 = toDo("test title 1", "test description 1", "test date 1", "1", true);
-testToDo2 = toDo("test title 2", "test description 2", "test date 2", "2", false);
-testToDo3 = toDo("test title 3", "test description 3", "test date 3", "3", true);
+const now = new Date();
+
+testToDo1 = toDo("test title 1", "test description 1", now, "1", true);
+testToDo2 = toDo("test title 2", "test description 2", now, "2", false);
+testToDo3 = toDo("test title 3", "test description 3", now, "3", true);
 testProject = project("test name 1", [testToDo1, testToDo2, testToDo3]);
-testToDo4 = toDo("test title 4", "test description 4", "test date 4", "1", false);
+testToDo4 = toDo("test title 4", "test description 4", now, "1", false);
 testProject.addToDoToProject(testToDo4);
 
-testToDo5 = toDo("test title 5", "test description 5", "test date 5", "1", false);
-testToDo6 = toDo("test title 6", "test description 6", "test date 6", "3", true);
-testToDo7 = toDo("test title 7", "test description 7", "test date 7", "2", false);
+testToDo5 = toDo("test title 5", "test description 5", now, "1", false);
+testToDo6 = toDo("test title 6", "test description 6", now, "3", true);
+testToDo7 = toDo("test title 7", "test description 7", now, "2", false);
 testProject2 = project("test name 2", [testToDo5, testToDo6, testToDo7]);
 
 toDoList.addProjectToList(testProject);
 toDoList.addProjectToList(testProject2);
-console.log(toDoList.displayProjectList());
 
 displayProject(toDoList.getProjectList()[0], 0);
 displayProjectList();
