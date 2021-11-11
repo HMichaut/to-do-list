@@ -104,10 +104,20 @@ function initModal() {
   }
 }
 
-function openModalToDo(input) {
+function openModalToDo(input, deleteButton) {
   const modal = document.getElementById("myModal");
+
+  const modalTitle = document.getElementById("modal-title");
+  modalTitle.innerHTML = "Title: " + input.getTitle();
+
+  const modalDate = document.getElementById("modal-date");
+  modalDate.innerHTML = "Due date: " + input.getDueDate();
+
+  const oldDeleteButton = document.getElementById("delete-button");
+  oldDeleteButton.parentNode.replaceChild(deleteButton, oldDeleteButton);
+
   const modalText = document.getElementById("modal-description-text");
-  modalText.innerHTML = input.getDescription();
+  modalText.innerHTML = "Description: " + input.getDescription();
   modal.style.display = "block";
 }
 
@@ -148,17 +158,26 @@ function displayProject(inputProject, projectIndex) {
 
   for (let i = 0; i < inputToDolist.length; i++) {
     const toDoListBox = document.createElement("div");
-    toDoListBox.addEventListener("click", () => {
-      openModalToDo(inputToDolist[i]);
-    });
 
     const titleBox = document.createElement("div");
     titleBox.innerHTML = inputToDolist[i].getTitle();
     titleBox.className = "param-box";
+    titleBox.id = "title-box";
 
-    // const descriptionBox = document.createElement("div");
-    // descriptionBox.innerHTML = inputToDolist[i].getDescription();
-    // descriptionBox.className = "param-box";
+    const deleteToDo = document.createElement("button");
+    deleteToDo.className = "completion-box";
+    deleteToDo.id = "delete-button";
+    deleteToDo.innerHTML = "Delete";
+    deleteToDo.addEventListener("click", () => {
+      procInputProject.deleteToDo(i);
+      resetToDoListView();
+      displayProject(procInputProject, procProjectIndex);
+    });
+
+
+    titleBox.addEventListener("click", () => {
+      openModalToDo(inputToDolist[i], deleteToDo);
+    });
 
     const dueDate = document.createElement("div");
     dueDate.innerHTML = inputToDolist[i].getDueDate();
@@ -196,21 +215,10 @@ function displayProject(inputProject, projectIndex) {
       });
     };
 
-    const deleteToDo = document.createElement("button");
-    deleteToDo.className = "completion-box";
-    deleteToDo.innerHTML = "Delete";
-    deleteToDo.addEventListener("click", () => {
-      procInputProject.deleteToDo(i);
-      resetToDoListView();
-      displayProject(procInputProject, procProjectIndex);
-    });
-
     toDoListBox.appendChild(titleBox);
-    // toDoListBox.appendChild(descriptionBox);
     toDoListBox.appendChild(dueDate);
     toDoListBox.appendChild(priority);
     toDoListBox.appendChild(completion);
-    toDoListBox.appendChild(deleteToDo);
     contentDiv.appendChild(toDoListBox);
   }
 
