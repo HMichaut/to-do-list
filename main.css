@@ -113,8 +113,13 @@ End reset
 	justify-content: space-between;
 }
 
+.to-do-list-edit {
+	margin-left: 50px;
+}
+
 .to-do-description-field {
 	height: 200px;
+	min-width: 500px;
 }
 
 

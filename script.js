@@ -179,9 +179,6 @@ function openModalToDo(input, deleteButton, procInputProject, procProjectIndex) 
   const old_form = document.getElementById("edit-form");
   old_form.parentNode.replaceChild(new_form, old_form);
 
-  const oldDeleteButton = document.getElementById("delete-button");
-  oldDeleteButton.parentNode.replaceChild(deleteButton, oldDeleteButton);
-
   const editForm = document.getElementById("edit-form");
 
   const br = document.createElement("br");
@@ -211,6 +208,7 @@ function openModalToDo(input, deleteButton, procInputProject, procProjectIndex) 
   form.appendChild(br.cloneNode());
 
   form.appendChild(edit);
+  form.appendChild(deleteButton);
   editForm.appendChild(form);
 
   modal.style.display = "block";
@@ -259,14 +257,17 @@ function displayProject(inputProject, projectIndex) {
     titleBox.className = "param-box";
     titleBox.id = "title-box";
 
+    const modal = document.getElementById("myModal");
     const deleteToDo = document.createElement("button");
     deleteToDo.className = "completion-box";
     deleteToDo.id = "delete-button";
     deleteToDo.innerHTML = "Delete";
+    deleteToDo.setAttribute("type", "button");
     deleteToDo.addEventListener("click", () => {
       procInputProject.deleteToDo(i);
       resetToDoListView();
       displayProject(procInputProject, procProjectIndex);
+      modal.style.display = "none";
     });
 
 
