@@ -21,7 +21,8 @@ const project = (name, attributedToDoList) => {
   const getAttributedToDoList = () => attributedToDoList;
   const addToDoToProject = (toDo) => attributedToDoList.push(toDo);
   const deleteToDo = (index) => attributedToDoList.splice(index, 1);
-  return { getName, getAttributedToDoList, addToDoToProject, deleteToDo };
+  const getlastToDo = () => attributedToDoList[attributedToDoList.length - 1];
+  return { getName, getAttributedToDoList, addToDoToProject, deleteToDo, getlastToDo };
 };
 
 const toDoList = (() => {
@@ -166,7 +167,7 @@ function openModalToDo(input, deleteButton, procInputProject, procProjectIndex) 
 
   edit.className = "create-box";
   edit.setAttribute("type", "button");
-  edit.innerHTML = "Edit";
+  edit.innerHTML = "Submit";
   edit.addEventListener("click", () => {
     input.updateValues(frm_title.value, frm_description.value, frm_due_date.valueAsDate, frm_priority.value);
     resetToDoListView();
@@ -219,6 +220,7 @@ function displayProject(inputProject, projectIndex) {
 
   let procInputProject = inputProject;
   let procProjectIndex = projectIndex;
+  const modal = document.getElementById("myModal");
 
   if (procInputProject === undefined) {
     toDoList.createProject("default");
@@ -257,7 +259,6 @@ function displayProject(inputProject, projectIndex) {
     titleBox.className = "param-box";
     titleBox.id = "title-box";
 
-    const modal = document.getElementById("myModal");
     const deleteToDo = document.createElement("button");
     deleteToDo.className = "completion-box";
     deleteToDo.id = "delete-button";
@@ -319,54 +320,29 @@ function displayProject(inputProject, projectIndex) {
     contentDiv.appendChild(toDoListBox);
   }
 
-  const form = document.createElement("form");
-  form.className = "to-do-list-form";
-
-  const frm_title = document.createElement("input");
-  frm_title.setAttribute("type", "text");
-  frm_title.setAttribute("name", "title");
-  frm_title.setAttribute("placeholder", "title");
-  frm_title.className = "to-do-text-field";
-
-  const frm_description = document.createElement("input");
-  frm_description.setAttribute("type", "text");
-  frm_description.setAttribute("name", "description");
-  frm_description.setAttribute("placeholder", "description");
-  frm_description.className = "to-do-text-field";
-
-  const frm_due_date = document.createElement("input");
-  frm_due_date.setAttribute("type", "date");
-  frm_due_date.setAttribute("name", "due date");
-  frm_due_date.className = "to-do-text-field";
-
-  const frm_priority = document.createElement("select");
-  frm_priority.setAttribute("name", "priority");
-  frm_priority.className = "to-do-text-field";
-
-  for (let j = 0; j < 3; j++) {
-    let option = document.createElement("option");
-    option.setAttribute("value", j + 1);
-    option.innerHTML = j + 1;
-    frm_priority.appendChild(option);
-  }
-
-  const create = document.createElement("button");
-
-  create.className = "create-box";
-  create.innerHTML = "Create";
-  create.addEventListener("click", () => {
-    procInputProject.addToDoToProject(toDo(frm_title.value, frm_description.value, frm_due_date.valueAsDate , frm_priority.value, false));
+  const newForm = document.createElement("button");
+  
+  const newDeleteToDo = document.createElement("button");
+  newDeleteToDo.className = "completion-box";
+  newDeleteToDo.id = "delete-button";
+  newDeleteToDo.innerHTML = "Delete";
+  newDeleteToDo.setAttribute("type", "button");
+  newDeleteToDo.addEventListener("click", () => {
+    procInputProject.deleteToDo(procInputProject.getAttributedToDoList().length - 1);
     resetToDoListView();
     displayProject(procInputProject, procProjectIndex);
+    modal.style.display = "none";
   });
 
+  newForm.className = "new-box";
+  newForm.innerHTML = "New";
+  newForm.addEventListener("click", () => {
+    procInputProject.addToDoToProject(toDo("", "", new Date(), "1", false));
+    const newToDolist = procInputProject.getlastToDo();
+    openModalToDo(newToDolist, newDeleteToDo, procInputProject, procProjectIndex);
+  });
 
-  form.appendChild(frm_title);
-  form.appendChild(frm_description);
-  form.appendChild(frm_due_date);
-  form.appendChild(frm_priority);
-  form.appendChild(create);
-  contentDiv.appendChild(form);
+  contentDiv.appendChild(newForm);
 };
 
 const now = new Date();

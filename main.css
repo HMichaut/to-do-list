@@ -225,13 +225,29 @@ End reset
 }
 
 .create-box {
+	margin-top: 2vh;
 	margin-right: 1vw;
+	margin-left: auto;
 	background-color: blue;
 	color: white;
 	cursor:pointer;
 }
 
 .create-box:hover {
+	background-color: darkblue;
+}
+
+.new-box {
+	width: 50px;
+	margin-top: 2vh;
+	margin-right: auto;
+	margin-left: auto;
+	background-color: blue;
+	color: white;
+	cursor:pointer;
+}
+
+.new-box:hover {
 	background-color: darkblue;
 }
 
