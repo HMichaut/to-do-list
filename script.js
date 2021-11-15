@@ -1,4 +1,11 @@
 const toDo = (title, description, dueDate, priority, completion) => {
+  const get = () => {
+    return Object.freeze({"title": title, "description": description, "dueDate": dueDate.toISOString(), "priority": priority, "completion": completion});
+  }
+
+  const toJSON = () => {
+    return get();
+  }
   const getTitle = () => title;
   const getDescription = () => description;
   const getDueDate = () => dueDate;
@@ -13,20 +20,55 @@ const toDo = (title, description, dueDate, priority, completion) => {
   const getCompletion = () => completion;
   const closeToDo = () => completion = false;
   const openToDo = () => completion = true;
-  return { getTitle, getDescription, getDueDate, getPriority, getCompletion, setPriority, closeToDo, openToDo, updateValues };
+  return { getTitle, getDescription, getDueDate, getPriority, getCompletion, setPriority, closeToDo, openToDo, updateValues, toJSON };
 };
 
 const project = (name, attributedToDoList) => {
+  const get = () => {
+    return Object.freeze({"name": name, "attributedToDoList": attributedToDoList});
+  }
+
+  const toJSON = () => {
+    return get();
+  }
   const getName = () => name;
   const getAttributedToDoList = () => attributedToDoList;
   const addToDoToProject = (toDo) => attributedToDoList.push(toDo);
   const deleteToDo = (index) => attributedToDoList.splice(index, 1);
   const getlastToDo = () => attributedToDoList[attributedToDoList.length - 1];
-  return { getName, getAttributedToDoList, addToDoToProject, deleteToDo, getlastToDo };
+  return { getName, getAttributedToDoList, addToDoToProject, deleteToDo, getlastToDo, toJSON };
 };
 
 const toDoList = (() => {
-  let projectList = [project("default", [])];
+  let projectListJSON = localStorage.getItem('ToDoProject');
+  let projectList = [];
+
+  console.log(projectListJSON);
+
+  if (projectListJSON !== null) {
+    for (let i = 0; i < JSON.parse(projectListJSON).length; i++) {
+      let projectIter = JSON.parse(projectListJSON)[i];
+      let projectToDoList = [];
+      for (let i = 0; i < projectIter.attributedToDoList.length; i++) {
+        let toDoIter = projectIter.attributedToDoList[i];
+        projectToDoList.push(toDo(toDoIter.title, toDoIter.description, new Date(toDoIter.dueDate), toDoIter.priority, toDoIter.false));
+      }
+      projectList.push(project(projectIter.name, projectToDoList));
+      
+    }
+  } else {
+    projectList.push(project("default", []));
+  };
+
+
+  const get = () => {
+    return Object.freeze(...projectList);
+  }
+
+  const toJSON = () => {
+    return get();
+  }
+
   const getProjectList = () => projectList;
   const createProject = (inputName) => projectList.push(project(inputName, []));
   const addProjectToList = (inputProject) => projectList.push(inputProject);
@@ -37,9 +79,17 @@ const toDoList = (() => {
     createProject,
     addProjectToList,
     displayProjectList,
-    deleteProject
+    deleteProject,
+    toJSON
   };
 })();
+
+function saveToLocalStorage() {
+  console.log(toDoList.getProjectList());
+  console.log(toDoList.getProjectList());
+  console.log(JSON.stringify(toDoList.getProjectList()));
+  localStorage.setItem('ToDoProject', JSON.stringify(toDoList.getProjectList()));
+};
 
 function displayProjectList() {
   const projectList = toDoList.getProjectList();
@@ -76,6 +126,7 @@ function displayProjectList() {
     toDoList.createProject(frm_text.value);
     resetProjectList();
     displayProjectList();
+    saveToLocalStorage();
   });
 
   form.appendChild(frm_text);
@@ -173,6 +224,7 @@ function openModalToDo(input, deleteButton, procInputProject, procProjectIndex) 
     resetToDoListView();
     displayProject(procInputProject, procProjectIndex);
     modal.style.display = "none";
+    saveToLocalStorage()
   });
 
   const new_form = document.body.appendChild(document.createElement('div'));
@@ -239,13 +291,14 @@ function displayProject(inputProject, projectIndex) {
 
   const deleteProject = document.createElement("button");
   deleteProject.className = "delete-project-box";
-  deleteProject.innerHTML = "Delete";
+  deleteProject.innerHTML = "Delete project";
   deleteProject.addEventListener("click", () => {
     toDoList.deleteProject(projectIndex);
     resetToDoListView();
     displayProject(toDoList.getProjectList()[0], 0);
     resetProjectList();
     displayProjectList();
+    saveToLocalStorage();
   });
 
   contentDiv.appendChild(deleteProject);
@@ -269,6 +322,7 @@ function displayProject(inputProject, projectIndex) {
       resetToDoListView();
       displayProject(procInputProject, procProjectIndex);
       modal.style.display = "none";
+      saveToLocalStorage();
     });
 
 
@@ -277,6 +331,25 @@ function displayProject(inputProject, projectIndex) {
     });
 
     const dueDate = document.createElement("div");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     dueDate.innerHTML = inputToDolist[i].getDueDate().toISOString().split('T')[0];
     dueDate.className = "param-box";
@@ -295,6 +368,7 @@ function displayProject(inputProject, projectIndex) {
         inputToDolist[i].closeToDo();
         resetToDoListView();
         displayProject(procInputProject, procProjectIndex);
+        saveToLocalStorage();
       });
     } else {
       if (inputToDolist[i].getPriority() === "1") {
@@ -310,6 +384,7 @@ function displayProject(inputProject, projectIndex) {
         inputToDolist[i].openToDo();
         resetToDoListView();
         displayProject(procInputProject, procProjectIndex);
+        saveToLocalStorage();
       });
     };
 
@@ -335,7 +410,7 @@ function displayProject(inputProject, projectIndex) {
   });
 
   newForm.className = "new-box";
-  newForm.innerHTML = "New";
+  newForm.innerHTML = "New task";
   newForm.addEventListener("click", () => {
     procInputProject.addToDoToProject(toDo("", "", new Date(), "1", false));
     const newToDolist = procInputProject.getlastToDo();
@@ -345,22 +420,22 @@ function displayProject(inputProject, projectIndex) {
   contentDiv.appendChild(newForm);
 };
 
-const now = new Date();
+// const now = new Date();
 
-testToDo1 = toDo("test title 1", "test description 1", now, "1", true);
-testToDo2 = toDo("test title 2", "test description 2", now, "2", false);
-testToDo3 = toDo("test title 3", "test description 3", now, "3", true);
-testProject = project("test name 1", [testToDo1, testToDo2, testToDo3]);
-testToDo4 = toDo("test title 4", "test description 4", now, "1", false);
-testProject.addToDoToProject(testToDo4);
+// testToDo1 = toDo("test title 1", "test description 1", now, "1", true);
+// testToDo2 = toDo("test title 2", "test description 2", now, "2", false);
+// testToDo3 = toDo("test title 3", "test description 3", now, "3", true);
+// testProject = project("test name 1", [testToDo1, testToDo2, testToDo3]);
+// testToDo4 = toDo("test title 4", "test description 4", now, "1", false);
+// testProject.addToDoToProject(testToDo4);
 
-testToDo5 = toDo("test title 5", "test description 5", now, "1", false);
-testToDo6 = toDo("test title 6", "test description 6", now, "3", true);
-testToDo7 = toDo("test title 7", "test description 7", now, "2", false);
-testProject2 = project("test name 2", [testToDo5, testToDo6, testToDo7]);
+// testToDo5 = toDo("test title 5", "test description 5", now, "1", false);
+// testToDo6 = toDo("test title 6", "test description 6", now, "3", true);
+// testToDo7 = toDo("test title 7", "test description 7", now, "2", false);
+// testProject2 = project("test name 2", [testToDo5, testToDo6, testToDo7]);
 
-toDoList.addProjectToList(testProject);
-toDoList.addProjectToList(testProject2);
+// toDoList.addProjectToList(testProject);
+// toDoList.addProjectToList(testProject2);
 
 displayProject(toDoList.getProjectList()[0], 0);
 displayProjectList();
