@@ -113,6 +113,11 @@ End reset
 	justify-content: space-between;
 }
 
+.to-do-description-field {
+	height: 200px;
+}
+
+
 .closed {
 	background-color: lightgrey;
 }

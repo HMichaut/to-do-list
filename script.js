@@ -129,11 +129,11 @@ function openModalToDo(input, deleteButton, procInputProject, procProjectIndex) 
   const label_description = document.createElement("Label");
   label_description.innerHTML = "Description";
 
-  const frm_description = document.createElement("input");
-  frm_description.setAttribute("type", "text");
+  const frm_description = document.createElement("textarea");
+  frm_description.setAttribute("rows", "5");
   frm_description.setAttribute("name", "description");
   frm_description.setAttribute("placeholder", "description");
-  frm_description.className = "to-do-text-field";
+  frm_description.className = "to-do-description-field";
 
   frm_description.value = input.getDescription();
 
