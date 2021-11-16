@@ -265,69 +265,26 @@ function openModalToDo(input, deleteButton, procInputProject, procProjectIndex) 
   resetForm();
 
   const editForm = document.getElementById("edit-form");
-
   const br = document.createElement("br");
 
   form.append(label_title, br.cloneNode(), frm_title, br.cloneNode(), br.cloneNode(), label_description, br.cloneNode(),
               frm_description, br.cloneNode(), br.cloneNode(), label_due_date, br.cloneNode(), frm_due_date, 
               br.cloneNode(), br.cloneNode(), label_priority, br.cloneNode(), frm_priority, br.cloneNode(), 
               br.cloneNode(), edit, deleteButton);
-
-  // form.appendChild(label_title);
-  // form.appendChild(br.cloneNode());
-  // form.appendChild(frm_title);
-  // form.appendChild(br.cloneNode());
-  // form.appendChild(br.cloneNode());
-
-  // form.appendChild(label_description);
-  // form.appendChild(br.cloneNode());
-  // form.appendChild(frm_description);
-  // form.appendChild(br.cloneNode());
-  // form.appendChild(br.cloneNode());
-
-  // form.appendChild(label_due_date);
-  // form.appendChild(br.cloneNode());
-  // form.appendChild(frm_due_date);
-  // form.appendChild(br.cloneNode());
-  // form.appendChild(br.cloneNode());
-
-  // form.appendChild(label_priority);
-  // form.appendChild(br.cloneNode());
-  // form.appendChild(frm_priority);
-  // form.appendChild(br.cloneNode());
-  // form.appendChild(br.cloneNode());
-
-  // form.appendChild(edit);
-  // form.appendChild(deleteButton);
   editForm.appendChild(form);
 
   modal.style.display = "block";
 }
 
-
-
-
-function displayProject(inputProject, projectIndex) {
-
-  let procInputProject = inputProject;
-  let procProjectIndex = projectIndex;
-  const modal = document.getElementById("myModal");
-
-  if (procInputProject === undefined) {
-    toDoList.createProject("default");
-    procInputProject = toDoList.getProjectList()[0];
-    procProjectIndex = 0;
-  }
-
-  const inputToDolist = procInputProject.getAttributedToDoList();
+function initProjectBox(inputBox, inputProject) {
   const contentDiv = document.getElementById("content-text");
+  inputBox.innerHTML = inputProject.getName();
+  inputBox.className = "content-project-box";
+  contentDiv.appendChild(inputBox);
+}
 
-  const projectBox = document.createElement("div");
-  projectBox.innerHTML = procInputProject.getName();
-  projectBox.className = "content-project-box";
-  contentDiv.appendChild(projectBox);
-
-
+function initDeleteButton() {
+  const contentDiv = document.getElementById("content-text");
   const deleteProject = document.createElement("button");
   deleteProject.className = "delete-project-box";
   deleteProject.innerHTML = "Delete project";
@@ -341,32 +298,44 @@ function displayProject(inputProject, projectIndex) {
   });
 
   contentDiv.appendChild(deleteProject);
+}
 
+function initTitleBox (inputBox, inputTitle) {
+  inputBox.innerHTML = inputTitle;
+  inputBox.className = "param-box";
+  inputBox.id = "title-box";
+};
+
+function initDeleteToDo (deleteToDo, inputProject, projectIndex, iter) {
+  const modal = document.getElementById("myModal");
+  deleteToDo.className = "completion-box";
+  deleteToDo.id = "delete-button";
+  deleteToDo.innerHTML = "Delete";
+  deleteToDo.setAttribute("type", "button");
+  deleteToDo.addEventListener("click", () => {
+    inputProject.deleteToDo(iter);
+    resetToDoListView();
+    displayProject(inputProject, projectIndex);
+    modal.style.display = "none";
+    saveToLocalStorage();
+  });
+}
+
+function createToDoGrid (inputProject, projectIndex) {
+  const contentDiv = document.getElementById("content-text");
+  const inputToDolist = inputProject.getAttributedToDoList();
 
   for (let i = 0; i < inputToDolist.length; i++) {
     const toDoListBox = document.createElement("div");
 
     const titleBox = document.createElement("div");
-    titleBox.innerHTML = inputToDolist[i].getTitle();
-    titleBox.className = "param-box";
-    titleBox.id = "title-box";
+    initTitleBox (titleBox, inputToDolist[i].getTitle());
 
     const deleteToDo = document.createElement("button");
-    deleteToDo.className = "completion-box";
-    deleteToDo.id = "delete-button";
-    deleteToDo.innerHTML = "Delete";
-    deleteToDo.setAttribute("type", "button");
-    deleteToDo.addEventListener("click", () => {
-      procInputProject.deleteToDo(i);
-      resetToDoListView();
-      displayProject(procInputProject, procProjectIndex);
-      modal.style.display = "none";
-      saveToLocalStorage();
-    });
-
+    initDeleteToDo (deleteToDo, inputProject, projectIndex, i);
 
     titleBox.addEventListener("click", () => {
-      openModalToDo(inputToDolist[i], deleteToDo, procInputProject, procProjectIndex);
+      openModalToDo(inputToDolist[i], deleteToDo, inputProject, projectIndex);
     });
 
     const dueDate = document.createElement("div");
@@ -387,7 +356,7 @@ function displayProject(inputProject, projectIndex) {
       completion.addEventListener("click", () => {
         inputToDolist[i].closeToDo();
         resetToDoListView();
-        displayProject(procInputProject, procProjectIndex);
+        displayProject(inputProject, projectIndex);
         saveToLocalStorage();
       });
     } else {
@@ -403,38 +372,59 @@ function displayProject(inputProject, projectIndex) {
       completion.addEventListener("click", () => {
         inputToDolist[i].openToDo();
         resetToDoListView();
-        displayProject(procInputProject, procProjectIndex);
+        displayProject(inputProject, projectIndex);
         saveToLocalStorage();
       });
     };
 
-    toDoListBox.appendChild(titleBox);
-    toDoListBox.appendChild(dueDate);
-    toDoListBox.appendChild(priority);
-    toDoListBox.appendChild(completion);
+    toDoListBox.append(titleBox, dueDate, priority, completion);
+
     contentDiv.appendChild(toDoListBox);
   }
+}
 
-  const newForm = document.createElement("button");
-  
-  const newDeleteToDo = document.createElement("button");
-  newDeleteToDo.className = "completion-box";
-  newDeleteToDo.id = "delete-button";
-  newDeleteToDo.innerHTML = "Delete";
-  newDeleteToDo.setAttribute("type", "button");
-  newDeleteToDo.addEventListener("click", () => {
-    procInputProject.deleteToDo(procInputProject.getAttributedToDoList().length - 1);
+function initNewToDoDelete (deleteButton, inputProject, projectIndex) {
+  const modal = document.getElementById("myModal");
+
+  deleteButton.className = "completion-box";
+  deleteButton.id = "delete-button";
+  deleteButton.innerHTML = "Delete";
+  deleteButton.setAttribute("type", "button");
+  deleteButton.addEventListener("click", () => {
+    inputProject.deleteToDo(inputProject.getAttributedToDoList().length - 1);
     resetToDoListView();
-    displayProject(procInputProject, procProjectIndex);
+    displayProject(inputProject, projectIndex);
     modal.style.display = "none";
   });
+}
 
+function displayProject(inputProject, projectIndex) {
+
+  const contentDiv = document.getElementById("content-text");
+
+  if (inputProject === undefined) {
+    toDoList.createProject("default");
+    inputProject = toDoList.getProjectList()[0];
+    projectIndex = 0;
+  }
+
+  const projectBox = document.createElement("div");
+  initProjectBox(projectBox, inputProject);
+
+  initDeleteButton();
+  createToDoGrid(inputProject, projectIndex);
+  
+  const newDeleteToDo = document.createElement("button");
+
+  initNewToDoDelete (newDeleteToDo, inputProject, projectIndex);
+
+  const newForm = document.createElement("button");
   newForm.className = "new-box";
   newForm.innerHTML = "New task";
   newForm.addEventListener("click", () => {
-    procInputProject.addToDoToProject(toDo("", "", new Date(), "1", false));
-    const newToDolist = procInputProject.getlastToDo();
-    openModalToDo(newToDolist, newDeleteToDo, procInputProject, procProjectIndex);
+    inputProject.addToDoToProject(toDo("", "", new Date(), "1", false));
+    const newToDolist = inputProject.getlastToDo();
+    openModalToDo(newToDolist, newDeleteToDo, inputProject, projectIndex);
   });
 
   contentDiv.appendChild(newForm);
