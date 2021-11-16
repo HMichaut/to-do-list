@@ -84,6 +84,8 @@ const toDoList = (() => {
   };
 })();
 
+
+
 function saveToLocalStorage() {
   console.log(toDoList.getProjectList());
   console.log(toDoList.getProjectList());
@@ -91,13 +93,10 @@ function saveToLocalStorage() {
   localStorage.setItem('ToDoProject', JSON.stringify(toDoList.getProjectList()));
 };
 
-function displayProjectList() {
-  const projectList = toDoList.getProjectList();
+function displayAllProjects () {
   const contentDiv = document.getElementById("project-view");
-  const projectHead = document.createElement("div");
-  projectHead.innerHTML = "Project:"
-  projectHead.className = "project-head";
-  contentDiv.appendChild(projectHead);
+  const projectList = toDoList.getProjectList();
+
   for (let i = 0; i < projectList.length; i++) {
     const project = document.createElement("div");
     project.innerHTML = "> " + projectList[i].getName();
@@ -108,6 +107,10 @@ function displayProjectList() {
     });
     contentDiv.appendChild(project);
   }
+}
+
+function addprojectForm () {
+  const contentDiv = document.getElementById("project-view");
   const form = document.createElement("form");
   form.className = "project-form";
 
@@ -117,12 +120,12 @@ function displayProjectList() {
   frm_text.setAttribute("placeholder", "new project");
   frm_text.className = "text-field";
 
-  let s = document.createElement("button");
+  let addButton = document.createElement("button");
 
-  s.setAttribute("type", "button");
-  s.innerHTML = "Add";
+  addButton.setAttribute("type", "button");
+  addButton.innerHTML = "Add";
 
-  s.addEventListener("click", () => {
+  addButton.addEventListener("click", () => {
     toDoList.createProject(frm_text.value);
     resetProjectList();
     displayProjectList();
@@ -130,8 +133,19 @@ function displayProjectList() {
   });
 
   form.appendChild(frm_text);
-  form.appendChild(s);
+  form.appendChild(addButton);
   contentDiv.appendChild(form);
+}
+
+function displayProjectList() {
+  const contentDiv = document.getElementById("project-view");
+  const projectHead = document.createElement("div");
+  projectHead.innerHTML = "Project:"
+  projectHead.className = "project-head";
+  contentDiv.appendChild(projectHead);
+
+  displayAllProjects();
+  addprojectForm ();
 }
 
 function resetProjectList() {
@@ -162,6 +176,50 @@ function initModal() {
   }
 }
 
+function initFormTitle (inputForm, input) {
+  inputForm.setAttribute("type", "text");
+  inputForm.setAttribute("name", "title");
+  inputForm.setAttribute("placeholder", "title");
+  inputForm.className = "to-do-text-field";
+  inputForm.value = input.getTitle();
+}
+
+function initFormDescription (inputForm, input) {
+  inputForm.setAttribute("rows", "5");
+  inputForm.setAttribute("name", "description");
+  inputForm.setAttribute("placeholder", "description");
+  inputForm.className = "to-do-description-field";
+  inputForm.value = input.getDescription();
+}
+
+function initFormDueDate (inputForm, input) {
+  inputForm.setAttribute("type", "date");
+  inputForm.setAttribute("name", "due date");
+  inputForm.className = "to-do-text-field";
+  inputForm.valueAsDate = input.getDueDate();
+}
+
+function initFormpriority (inputForm, input) {
+  inputForm.setAttribute("name", "priority");
+  inputForm.className = "to-do-text-field";
+
+  for (let j = 0; j < 3; j++) {
+    let option = document.createElement("option");
+    option.setAttribute("value", j + 1);
+    option.innerHTML = j + 1;
+    inputForm.appendChild(option);
+  }
+  inputForm.value = input.getPriority();
+}
+
+function resetForm() {
+  const new_form = document.body.appendChild(document.createElement('div'));
+  new_form.id = "edit-form";
+  const old_form = document.getElementById("edit-form");
+  old_form.parentNode.replaceChild(new_form, old_form);
+}
+
+
 function openModalToDo(input, deleteButton, procInputProject, procProjectIndex) {
   const modal = document.getElementById("myModal");
   const form = document.createElement("form");
@@ -171,49 +229,26 @@ function openModalToDo(input, deleteButton, procInputProject, procProjectIndex) 
   label_title.innerHTML = "Title";
 
   const frm_title = document.createElement("input");
-  frm_title.setAttribute("type", "text");
-  frm_title.setAttribute("name", "title");
-  frm_title.setAttribute("placeholder", "title");
-  frm_title.className = "to-do-text-field";
-
-  frm_title.value = input.getTitle();
+  initFormTitle(frm_title, input);
 
   const label_description = document.createElement("Label");
   label_description.innerHTML = "Description";
 
   const frm_description = document.createElement("textarea");
-  frm_description.setAttribute("rows", "5");
-  frm_description.setAttribute("name", "description");
-  frm_description.setAttribute("placeholder", "description");
-  frm_description.className = "to-do-description-field";
-
-  frm_description.value = input.getDescription();
+  initFormDescription(frm_description, input);
 
   const label_due_date = document.createElement("Label");
   label_due_date.innerHTML = "Due Date";
 
   const frm_due_date = document.createElement("input");
-  frm_due_date.setAttribute("type", "date");
-  frm_due_date.setAttribute("name", "due date");
-  frm_due_date.className = "to-do-text-field";
-
-  frm_due_date.valueAsDate = input.getDueDate();
+  initFormDueDate(frm_due_date, input);
 
   const label_priority = document.createElement("Label");
   label_priority.innerHTML = "Priority";
 
   const frm_priority = document.createElement("select");
-  frm_priority.setAttribute("name", "priority");
-  frm_priority.className = "to-do-text-field";
+  initFormpriority(frm_priority, input);
 
-  for (let j = 0; j < 3; j++) {
-    let option = document.createElement("option");
-    option.setAttribute("value", j + 1);
-    option.innerHTML = j + 1;
-    frm_priority.appendChild(option);
-  }
-
-  frm_priority.value = input.getPriority();
   const edit = document.createElement("button");
 
   edit.className = "create-box";
@@ -227,45 +262,49 @@ function openModalToDo(input, deleteButton, procInputProject, procProjectIndex) 
     saveToLocalStorage()
   });
 
-  const new_form = document.body.appendChild(document.createElement('div'));
-  new_form.id = "edit-form";
-  const old_form = document.getElementById("edit-form");
-  old_form.parentNode.replaceChild(new_form, old_form);
+  resetForm();
 
   const editForm = document.getElementById("edit-form");
 
   const br = document.createElement("br");
 
-  form.appendChild(label_title);
-  form.appendChild(br.cloneNode());
-  form.appendChild(frm_title);
-  form.appendChild(br.cloneNode());
-  form.appendChild(br.cloneNode());
+  form.append(label_title, br.cloneNode(), frm_title, br.cloneNode(), br.cloneNode(), label_description, br.cloneNode(),
+              frm_description, br.cloneNode(), br.cloneNode(), label_due_date, br.cloneNode(), frm_due_date, 
+              br.cloneNode(), br.cloneNode(), label_priority, br.cloneNode(), frm_priority, br.cloneNode(), 
+              br.cloneNode(), edit, deleteButton);
 
-  form.appendChild(label_description);
-  form.appendChild(br.cloneNode());
-  form.appendChild(frm_description);
-  form.appendChild(br.cloneNode());
-  form.appendChild(br.cloneNode());
+  // form.appendChild(label_title);
+  // form.appendChild(br.cloneNode());
+  // form.appendChild(frm_title);
+  // form.appendChild(br.cloneNode());
+  // form.appendChild(br.cloneNode());
 
-  form.appendChild(label_due_date);
-  form.appendChild(br.cloneNode());
-  form.appendChild(frm_due_date);
-  form.appendChild(br.cloneNode());
-  form.appendChild(br.cloneNode());
+  // form.appendChild(label_description);
+  // form.appendChild(br.cloneNode());
+  // form.appendChild(frm_description);
+  // form.appendChild(br.cloneNode());
+  // form.appendChild(br.cloneNode());
 
-  form.appendChild(label_priority);
-  form.appendChild(br.cloneNode());
-  form.appendChild(frm_priority);
-  form.appendChild(br.cloneNode());
-  form.appendChild(br.cloneNode());
+  // form.appendChild(label_due_date);
+  // form.appendChild(br.cloneNode());
+  // form.appendChild(frm_due_date);
+  // form.appendChild(br.cloneNode());
+  // form.appendChild(br.cloneNode());
 
-  form.appendChild(edit);
-  form.appendChild(deleteButton);
+  // form.appendChild(label_priority);
+  // form.appendChild(br.cloneNode());
+  // form.appendChild(frm_priority);
+  // form.appendChild(br.cloneNode());
+  // form.appendChild(br.cloneNode());
+
+  // form.appendChild(edit);
+  // form.appendChild(deleteButton);
   editForm.appendChild(form);
 
   modal.style.display = "block";
 }
+
+
 
 
 function displayProject(inputProject, projectIndex) {
@@ -331,25 +370,6 @@ function displayProject(inputProject, projectIndex) {
     });
 
     const dueDate = document.createElement("div");
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     dueDate.innerHTML = inputToDolist[i].getDueDate().toISOString().split('T')[0];
     dueDate.className = "param-box";
@@ -419,23 +439,6 @@ function displayProject(inputProject, projectIndex) {
 
   contentDiv.appendChild(newForm);
 };
-
-// const now = new Date();
-
-// testToDo1 = toDo("test title 1", "test description 1", now, "1", true);
-// testToDo2 = toDo("test title 2", "test description 2", now, "2", false);
-// testToDo3 = toDo("test title 3", "test description 3", now, "3", true);
-// testProject = project("test name 1", [testToDo1, testToDo2, testToDo3]);
-// testToDo4 = toDo("test title 4", "test description 4", now, "1", false);
-// testProject.addToDoToProject(testToDo4);
-
-// testToDo5 = toDo("test title 5", "test description 5", now, "1", false);
-// testToDo6 = toDo("test title 6", "test description 6", now, "3", true);
-// testToDo7 = toDo("test title 7", "test description 7", now, "2", false);
-// testProject2 = project("test name 2", [testToDo5, testToDo6, testToDo7]);
-
-// toDoList.addProjectToList(testProject);
-// toDoList.addProjectToList(testProject2);
 
 displayProject(toDoList.getProjectList()[0], 0);
 displayProjectList();
